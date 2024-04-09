@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <!--
+        https://www.flaticon.es/iconos-gratis/pokemon - Creados por Nikita Golubev
+        https://www.amazon.es/Elementos-Skylander-Cupcake-Toppers-Comestibles/dp/B01DS12GBI
+        Poderes: https://www.pngwing.com/es/free-png-tmjjs
+    -->
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cartas Pokemon</title>
+    <style>
+      /* Usando grid no tendremos el problema de float de algunas cartas más altas que otras */
+      
+      /* Es un css con los font-face */
+      @import url("https://fonts.googleapis.com/css2?family=Reddit+Mono:wght@200..900&display=swap");
+      * {
+        margin: 0;
+        padding: 0;
+        font-size: 100%;
+      }
+      body {
+        background-color: bisque;
+      }
+      .cartas {
+        display: grid;
+        /* Vamos a poner 4 cartas por fila */
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        /* Las centramos horizontalmente */
+        justify-items:center;
+        /* Dejamos un espacio entre filas y columnas */
+        gap: 20px;
+      }
+      .cartas h1 {
+        /* El título ocupa las primeras 4 columnas / 5 líneas */
+        grid-column: 1 / 5;
+        text-align: center;
+        font-size: 3rem;
+        /* Ponemos en mayúsculas los nombres de los Pokemon */
+        text-transform: uppercase;
+        word-spacing: 1rem; /* Espacio entre palabras */
+        letter-spacing: 1.5rem; /* Espacio entre letras */
+        /* Reddit Mono es el nombre de la fuente importada, debiendo abrir el fichero CSS
+        que hemos importado para conocer su nombre */
+        font-family: "Reddit Mono", sans-serif;
+      }
+
+      .carta {
+        border: 4px solid black;
+        border-radius: 10px;
+        font-family: "Lucida Sans", "Lucida Sans Regular", "Lucida Grande",
+          "Lucida Sans Unicode", Geneva, Verdana, sans-serif;
+               /* Les damos un width pues algunas fotos son más anchas que otras.
+        Lo ideal sería que todas las fotos fuesen iguales */
+        width: 300px;
+        /* Como tenemos un borde redondeado en las cartas pero luego el nombre de cada
+        pokemon tiene un fondo blanco, este fondo quedaría por encima del borde redondeado.
+        Con overflow: hidden hacemos que se recorte según el borde redondeado */
+        overflow: hidden;
+        /* Cuando pasemos el ratón sobre una carta queremos que se empequeñezca un poco.
+        Para que no sea de golpe, sino con una animación, indicamos en esta propiedad la
+        propiedad a animar y luego la duración (0.5 segundos). Puede ponerse más de una
+        propiedad separada con comas */
+        transition-property: transform;
+        transition-duration: 0.5s;
+        /* Ponemos un grid en cada carta para que el texto de los poders
+        no quede mal (queremos que quede en la aprte inferior) si algún texto ocupa más
+        de una línea */
+        display: grid;
+        grid-template-rows: 1fr 2f 1fr;
+      }
+      .carta header {
+        background-color: white;
+        padding: 5px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        /* Para colocar el nombre del Pokemon a la izquierda y sus puntos a la derecha,
+        vamos a usar grid, aunque valdría con flex o float, pues grid
+        está pensado para casos más complejos */
+        display: grid;
+        /* Dos columnas */
+        grid-template-columns: 1fr 1fr;
+        justify-content: space-between;
+      }
+      .carta header .puntos {
+        text-shadow: 0 0 2px goldenrod;
+        /* Poniendo el color del texto transparente, se verá solo la sombra. Lo ponemos
+        como un ejemplo, pues queda el texto poco claro de este modo y colores */
+        color: transparent;
+        text-align: right;
+      }
+      .carta .foto {
+        /* Hacemos que las imágenes de los Pokemon adapten su tamaño al del contenedor */
+        width: 100%;
+      }
+      .poderes {
+        background-color: antiquewhite;
+        padding: 5px;
+        font-size: 1.2rem;
+        /* Al igual que anteriormente queremos el nombre del poder a la izquierda y sus puntos a 
+        la derecha, lo que solucionarmos con Grid, aunque para este caso tan simple podríamos
+        usar Flex o float */
+        display: grid;
+        /* Tres columnas */
+        grid-template-columns: 1fr 2fr 1fr;
+        /* Para que los textos de poderes vayan en la parte inferior */
+        align-items: end;
+      }
+      .poderes .poder {
+        box-sizing: border-box;
+        /* Queremos que el icono del poder rote 360 grados al pasar el ratón sobre la carta.
+        Por ello lo animamos, pues no se notaría el cambio al ser de 360 grados */
+        transition-property: transform;
+        transition-duration: 0.3s;
+      }
+     
+      .poderes p {
+        text-align: center;
+      }
+      .poderes .puntosPoder {
+        /* Como usamos padding puede ser buena indea usar box-sizing para que este 
+        padding no se sume al ancho y alto del elemento */
+        box-sizing: border-box;
+        padding-right: 5px;
+        text-align: right;
+      }
+      .carta:hover {
+        /* Empequeñecemos la imagen un 5%: 1 es el tamaño normal, mayor de 1 agranda,
+        menor de 1 empequeñece */
+        transform: scale(0.95);
+      }
+      /* Cuando pase el ratón sobre la carta modificamos los elementos con la clase poder */
+      .carta:hover .poder {
+        /* Rotamos la imagen del poder 360 grados, es decir, una vuelta completa */
+        transform: rotate(360deg);
+      }
+      /* Creamos unas clases para crear degarados paralos diferentes tipos de Pokemon
+       y para cuando pase el ratón sobre las cartas */
+      .hierba {
+        background: rgb(39, 219, 18);
+        background: linear-gradient(
+          145deg,
+          rgba(39, 219, 18, 1) 0%,
+          rgba(193, 246, 187, 1) 100%
+        );
+      }
+      .hierba:hover {
+        background: rgb(39, 219, 18);
+        background: linear-gradient(
+          145deg,
+          rgba(193, 246, 187, 1) 0%,
+          rgba(39, 219, 18, 1) 100%
+        );
+      }
+      .agua {
+        background: rgb(13, 83, 233);
+        background: linear-gradient(
+          145deg,
+          rgb(13, 83, 233) 0%,
+          rgb(105, 147, 236) 100%
+        );
+      }
+      .agua:hover {
+        background: rgb(13, 83, 233);
+        background: linear-gradient(
+          145deg,
+          rgb(105, 147, 236) 0%,
+          rgb(13, 83, 233) 100%
+        );
+      }
+      .fuego {
+        background: rgb(233, 20, 13);
+        background: linear-gradient(
+          145deg,
+          rgb(233, 20, 13) 0%,
+          rgb(244, 137, 134) 100%
+        );
+      }
+      .fuego {
+        background: rgb(233, 20, 13);
+        background: linear-gradient(
+          145deg,
+          rgb(233, 20, 13) 0%,
+          rgb(244, 137, 134) 100%
+        );
+      }
+      .fuego:hover {
+        background: linear-gradient(
+          145deg,
+          rgb(244, 137, 134) 0%,
+          rgb(233, 20, 13) 100%
+        );
+      }
+      /* Para poder poner la bola en el centro de la imagen de la carta, vamos a usar
+      posicionamiento absoluto en esta. Por ello debemos establecer un posicionamiento
+      diferente al estático en su contenedor, pues si no su padre sería el body (o un padre
+      anterio con posicionamiento no estático).
+      Por ello hemos metido las dos imágenes dentro de un DIV en el HTML
+      
+      No podemos usar una imagen de fondo, con CSS pues quedaría por debajo de la imagen 
+      del Pokemon.
+
+      Con el + indicamos el primer div hermano del header (no puede haber otros hermanos
+      entre ambos).
+       */
+      .carta header + div {
+        position: relative;
+      }
+      .pokebola {
+        position: absolute;
+        /* Un truco para centrar la imagen es el siguiente */
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        margin: auto;
+        /* La hacemos un poco transparente */
+        opacity: 0.5;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="cartas">
+        <h1>Mazo de cartas</h1>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Flareon</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/flareon.png"
+              alt="Flareon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/fuego.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>Lengua de fuego</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Pikachu</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/pikachu.png"
+              alt="Pikacu"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/electrico.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>rayo letal</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Flareon</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/flareon.png"
+              alt="Flareon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/fuego.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>Lengua de fuego</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Pikachu</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/pikachu.png"
+              alt="Pikacu"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/electrico.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>rayo letal</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Flareon</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/flareon.png"
+              alt="Flareon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/fuego.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>Lengua de fuego</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Pikachu</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/pikachu.png"
+              alt="Pikacu"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/electrico.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>rayo letal</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Flareon</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/flareon.png"
+              alt="Flareon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/fuego.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>Lengua de fuego</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Pikachu</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/pikachu.png"
+              alt="Pikacu"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/electrico.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>rayo letal</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/bulbasaur.png"
+              loading="lazy"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/Espeon.png"
+              alt="Espeon"
+              loading="lazy"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Eevee</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/eevee.png"
+              loading="lazy"
+              alt="Flareon"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>Lengua de fuego</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta agua">
+          <header>
+            <h2>Bulbasaur</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/squirtle.png"
+              loading="lazy"
+              alt="bulbasaur"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/planta.png"
+              width="30"
+              alt="poder de planta"
+              class="poder"
+            />
+            <p>látigo cepa</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+        <div class="carta hierba">
+          <header>
+            <h2>Espeon</h2>
+            <div class="puntos">60</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/mew.png"
+              alt="Espeon"
+              loading="lazy"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/agua.png"
+              width="30"
+              alt="poder de hierba"
+              class="poder"
+            />
+            <p>Cuerno afilado</p>
+            <div class="puntosPoder">10</div>
+          </section>
+        </div>
+        <div class="carta fuego">
+          <header>
+            <h2>Pikachu</h2>
+            <div class="puntos">70</div>
+          </header>
+          <div>
+            <img
+              src="imagenes/personajes/eevee.png"
+              alt="Pikachu"
+              loading="lazy"
+              class="foto"
+            />
+            <img src="imagenes/otros/pokebola.png" alt="" class="pokebola" />
+          </div>
+          <section class="poderes ">
+            <img
+              src="imagenes/poderes/electrico.png"
+              width="30"
+              alt="poder de fuego"
+              class="poder"
+            />
+            <p>rayo letal</p>
+            <div class="puntosPoder">20</div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>
